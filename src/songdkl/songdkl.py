@@ -43,7 +43,7 @@ def _get_all_syls(files):
     return syls, objss
 
 
-def convert_syl_to_psd(syls, max_num_psds, N_psds):
+def convert_syl_to_psd(syls, max_num_psds, n_psds):
     """convert syllable segments to power spectral density
 
     Parameters
@@ -73,7 +73,7 @@ def convert_syl_to_psd(syls, max_num_psds, N_psds):
     return segedpsds
 
 
-def calculate(path1, path2, k, k2, max_wavs=120, max_num_psds=10000):
+def calculate(path1, path2, k, k2, n_psds=1, max_wavs=120, max_num_psds=10000):
     """calculate songdkl metric
 
     Parameters
@@ -86,6 +86,8 @@ def calculate(path1, path2, k, k2, max_wavs=120, max_num_psds=10000):
         number of syllable classes in song 1
     k2 : int
         number of syllable classes in song 2
+    n_psds : int
+        number of psds per syllable default is 1
     max_wavs : int
         maximum number of wav files to use. Default is 120.
     max_num_psds : int
@@ -106,8 +108,8 @@ def calculate(path1, path2, k, k2, max_wavs=120, max_num_psds=10000):
     syls1, objss1 = _get_all_syls(fils1) 
     syls2, objss2 = _get_all_syls(fils2)
 
-    segedpsds1 = convert_syl_to_psd(syls1, max_num_psds)
-    segedpsds2 = convert_syl_to_psd(syls2, max_num_psds)
+    segedpsds1 = convert_syl_to_psd(syls1, max_num_psds, n_psds)
+    segedpsds2 = convert_syl_to_psd(syls2, max_num_psds, n_psds)
 
     # select the first 50 syllables of the reference song as the basis set
     basis_set = segedpsds1[:50] 
@@ -171,4 +173,5 @@ if __name__ == '__main__':
     path2 = sys.argv[2]
     k = int(sys.argv[3])
     k2 = int(sys.argv[4])
-    calculate(path1, path2, k, k2)
+    n_psds=int(sys.argv[5])
+    calculate(path1, path2, k, k2, n_psds)
