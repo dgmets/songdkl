@@ -67,7 +67,7 @@ def convert_syl_to_psd(syls, max_num_psds, n_psds):
         segend = int(round(16000/(fs/float(nfft))))
         psdl = int(len(x[1:])/n)
         chunks = [[norm(psd(y[(m-1)*psdl:m*psdl], NFFT=nfft, Fs=fs)[0][segstart:segend] for m in range(1,n+1)] for y in x[1:]]
-        psds = [[item for sublist in x for item in sublist] for x in chunks]                
+        spsds = [[item for sublist in x for item in sublist] for x in chunks]                
         for n in spsds:
             segedpsds.append(n)
     return segedpsds
