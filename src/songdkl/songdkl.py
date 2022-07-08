@@ -43,7 +43,7 @@ def _get_all_syls(files):
     return syls, objss
 
 
-def convert_syl_to_psd(syls, max_num_psds):
+def convert_syl_to_psd(syls, max_num_psds, N_psds):
     """convert syllable segments to power spectral density
 
     Parameters
@@ -52,6 +52,8 @@ def convert_syl_to_psd(syls, max_num_psds):
         of ndarray, syllable segments extracted from .wav files
     max_num_psds : int
         maximum number of psds to calculate
+    N_psds : int
+        the number of PSDs you would like to calculate for each syllable.  They are evenly spaced.
 
     Returns
     -------
@@ -63,8 +65,9 @@ def convert_syl_to_psd(syls, max_num_psds):
         nfft = int(round(2**14/32000.0*fs))
         segstart = int(round(600/(fs/float(nfft))))
         segend = int(round(16000/(fs/float(nfft))))
-        psds = [psd(norm(y), NFFT=nfft, Fs=fs) for y in x[1:]]
-        spsds = [norm(n[0][segstart:segend]) for n in psds]
+        psdl = int(len(x[1:])/n)
+        chunks = [[norm(psd(y[(m-1)*psdl:m*psdl], NFFT=nfft, Fs=fs)[0][segstart:segend] for m in range(1,n+1)] for y in x[1:]]
+        psds = [[item for sublist in x for item in sublist] for x in chunks]                
         for n in spsds:
             segedpsds.append(n)
     return segedpsds
