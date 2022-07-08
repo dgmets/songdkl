@@ -69,7 +69,7 @@ def EMofgmmcluster(array_of_syls):
     return segedpsds1, bic.index(min(bic)) + 2
 
 
-def numsyls(path1):
+def numsyls(path1,n_syls=1):
     fils1 = [x for x in os.listdir(path1) if x[-4:] == '.wav']
 
     fils1 = fils1[:120]
@@ -95,8 +95,11 @@ def numsyls(path1):
         nfft = int(round(2 ** 14 / 32000.0 * fs))
         segstart = int(round(600 / (fs / float(nfft))))
         segend = int(round(16000 / (fs / float(nfft))))
-        psds = [psd(norm(y), NFFT=nfft, Fs=fs) for y in x[1:]]
-        spsds = [norm(n[0][segstart:segend]) for n in psds]
+        psdl = int(len(x[1:])/n)
+        chunks = [[norm(psd(y[(m-1)*psdl:m*psdl], NFFT=nfft, Fs=fs)[0][segstart:segend] for m in range(1,n+1)] for y in x[1:]]
+        spsds = [[item for sublist in x for item in sublist] for x in chunks]
+        #psds = [psd(norm(y), NFFT=nfft, Fs=fs) for y in x[1:]]
+        #spsds = [norm(n[0][segstart:segend]) for n in psds]
         for n in spsds: segedpsds1.append(n)
         if len(segedpsds1) > datano: break
 
@@ -108,4 +111,5 @@ def numsyls(path1):
 if __name__ == '__main__':
     # main program
     path1 = sys.argv[1]
+    n_syls = sys.argv[2]
     numsyls(path1)
